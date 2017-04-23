@@ -26,7 +26,7 @@ class IronSword extends Sword{
 	public IronSword(){
 		itemId = 1;
 		damageValue = 5;
-		dropRate = 0;
+		dropRate = 125;
 	}
 }
 
@@ -42,7 +42,7 @@ class AdamantiumSword extends Sword{
 	public AdamantiumSword(){
 		itemId = 3;
 		damageValue = 15;
-		dropRate = 10;
+		dropRate = 25;
 	}
 }
 
@@ -59,7 +59,7 @@ class HealthPotion extends Potion{
 	public HealthPotion(){
 		itemId = 4;
 		modifierValue = 15;
-		dropRate = 125;
+		dropRate = 250;
 	}
 }
 
@@ -67,7 +67,7 @@ class ManaPotion extends Potion{
 	public ManaPotion(){
 		itemId = 5;
 		modifierValue = 15;
-		dropRate = 300;
+		dropRate = 250;
 	}
 }
 
@@ -84,7 +84,7 @@ class IronArmor extends Armor{
 	public IronArmor(){
 		itemId = 6;
 		armorValue = 5;
-		dropRate = 25;
+		dropRate = 125;
 	}
 }
 
@@ -92,7 +92,7 @@ class SteelArmor extends Armor{
 	public SteelArmor(){
 		itemId = 7;
 		armorValue = 10;
-		dropRate = 50;
+		dropRate = 100;
 	}
 }
 
@@ -100,7 +100,7 @@ class AdamantiumArmor extends Armor{
 	public AdamantiumArmor(){
 		itemId = 8;
 		armorValue = 15;
-		dropRate = 5;
+		dropRate = 25;
 	}
 }
 
