@@ -1,16 +1,19 @@
-import java.math.*;
+
 public class Player {
 	private int currentHP = 50;
 	private int MAX_HP = 50;
+	private int score = 0;
 	public boolean hasLeveledFlag = false;
-	private int xp = 0;
-	private int speed, strength, currentLevel =0;
+	private int xPos, yPos;
+	private int speed, strength, currentLevel =0,xp = 0;
 	public int enemiesKilled =0;
     private String name;
     private Item inventory [];
     public Player(String n){
         name = n;
         inventory = new Item[10];
+        
+        buildCharacter(2);
     }
     public void buildCharacter(int difficulty){
     	inventory[0] = new IronSword();
@@ -58,7 +61,12 @@ public class Player {
     public String getName(){
     	return name;
     }
-    
+    public int getScore(){
+    	return score;
+    }
+    public int getLvl(){
+    	return currentLevel;
+    }
     
     
     //Add exp to the player when an enemy is killed or a floor is completed.
@@ -76,5 +84,21 @@ public class Player {
     	}
     	strength++;
     	speed++;
+    }
+    
+    public void editScore(int x){
+    	score+=x;
+    }
+    public int getXPos(){
+    	return xPos;
+    }
+    public int getYPos(){
+    	return yPos;
+    }
+    public void setYPos(int y){
+    	yPos = y;
+    }
+    public void setXPos(int x){
+    	xPos = x;
     }
 }

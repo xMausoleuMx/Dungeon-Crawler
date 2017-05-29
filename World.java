@@ -3,13 +3,22 @@ import java.util.*;
 public class World {
 	private int size, difficulty;
 	private Random num = new Random();
+	public Room [] [] worldMap = new Room [12][12];
 	public World(int d){
 		difficulty = d;
 	}
 	
 	public void genWorld(){
-		size = num.nextInt(3+difficulty);
+		size = num.nextInt(difficulty)+15;
+		
+		Room holder = new Room();
+		for(int i =0; i < 11; i++)
+			for(int k = 0; k <11;k++)
+				worldMap[i][k] = holder;
+
 		Room start = new Room();
+		start.connectedToStart = true;
+		start.isStart = true;
 		ArrayList<Room> roomHolder = new ArrayList<Room>();
 		roomHolder.add(start);
 		
@@ -26,11 +35,37 @@ public class World {
 		//Makes sure a non starting room has stairs
 		int x = num.nextInt(size-1)+1;
 		roomHolder.get(x).hasStairs = true;
-		
-		//connects the rooms to one another
-		for(int i = 0; i <size*1.5;i++){
-			
+		int xCoord = num.nextInt(10)+1;
+		int yCoord = num.nextInt(10)+1;
+		worldMap[xCoord][yCoord] = start;
+		for(int i = 1; i < roomHolder.size();i++){
+			do{
+				xCoord = num.nextInt(10)+1;
+				yCoord = num.nextInt(10)+1;
+				if(!worldMap[xCoord][yCoord].connectedToStart && checkConnected(xCoord,yCoord)){
+					roomHolder.get(i).connectedToStart = true;
+					worldMap[xCoord][yCoord] = roomHolder.get(i);
+				}
+			}while(!roomHolder.get(i).connectedToStart);
 		}
+		
+		//for testing purposes
+		for(int i = 0; i < 11;i++){
+			for(int k = 0; k < 11;k++){
+				if(worldMap[i][k].connectedToStart)
+					System.out.print("X");
+				else
+					System.out.print("O");
+			}
+			System.out.print("\n");
+		}
+	}
+	
+	boolean checkConnected(int x, int y){
+		if((worldMap[x+1][y] != null && worldMap[x+1][y].connectedToStart) ||(worldMap[x][y+1] != null &&  worldMap[x][y+1].connectedToStart) || (worldMap[x-1][y] != null && worldMap[x-1][y].connectedToStart) || (worldMap[x][y-1] != null && worldMap[x][y-1].connectedToStart))
+			return true;
+		else
+			return false;
 	}
 	
 	//Generates a monster based on spawn rates and returns it.
@@ -74,27 +109,11 @@ public class World {
 
 
 class Room{
-	private Room north, south, east, west;
 	public Monster resident;
-	public boolean hasStairs;
+	public boolean hasStairs= false, connectedToStart= false, isStart = false, beenVisited =false;
 	public Item loot;
 	public Room(){
+		
 	}
 	
-	public void connectRoom(Room temp, int direction){
-		switch(direction){
-		case 1:
-			north = temp;
-			break;
-		case 2:
-			east = temp;
-			break;
-		case 3:
-			south = temp;
-			break;
-		case 4:
-			west = temp;
-			break;
-		}
-	}
 }
