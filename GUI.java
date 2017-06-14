@@ -6,26 +6,22 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 import javax.swing.JLabel;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
+import java.util.Random;
 public class GUI extends JFrame {
 
 	private JPanel contentPane;
 	private Player playerCharacter;
+	private Monster enemy;
+	private int lastXPos, lastYPos;
+	private Random num = new Random();
+	private mapPanel minimappanel;
 	private World map;
 	private boolean inCombat = false;
 	private JLabel lblImage, playerHealthLabel, playerAttackLabel, playerArmorLabel, playerScoreLabel, playerLvlLabel, playerNameLabel;
@@ -64,18 +60,10 @@ public class GUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setForeground(Color.BLACK);
-		layeredPane.setBorder(new LineBorder(new Color(0, 0, 0), 2));
-		layeredPane.setBackground(Color.PINK);
-		layeredPane.setBounds(10, 301, 150, 140);
-		contentPane.add(layeredPane);
-		
-		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setBackground(Color.BLACK);
-		lblNewLabel.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\black.png"));
-		lblNewLabel.setBounds(0, 0, 150, 140);
-		layeredPane.add(lblNewLabel);
+		minimappanel = new mapPanel();
+		minimappanel.setBackground(Color.BLACK);
+		minimappanel.setBounds(10, 301, 150, 140);
+		contentPane.add(minimappanel);
 		
 		JLayeredPane layeredPane_1 = new JLayeredPane();
 		layeredPane_1.setBorder(new LineBorder(Color.BLACK, 2));
@@ -123,9 +111,14 @@ public class GUI extends JFrame {
 		lblScore.setBounds(55, 115, 46, 14);
 		layeredPane_2.add(lblScore);
 		
+		playerLvlLabel = new JLabel("0");
+		playerLvlLabel.setForeground(Color.WHITE);
+		playerLvlLabel.setBounds(120, 11, 30, 14);
+		layeredPane_2.add(playerLvlLabel);
+		
 		JLabel lblLvl = new JLabel("LvL:");
 		lblLvl.setForeground(Color.WHITE);
-		lblLvl.setBounds(94, 11, 20, 14);
+		lblLvl.setBounds(94, 11, 35, 14);
 		layeredPane_2.add(lblLvl);
 		
 		playerHealthLabel = new JLabel("100");
@@ -153,11 +146,6 @@ public class GUI extends JFrame {
 		playerNameLabel.setBounds(10, 11, 79, 14);
 		layeredPane_2.add(playerNameLabel);
 		
-		playerLvlLabel = new JLabel("0");
-		playerLvlLabel.setForeground(Color.WHITE);
-		playerLvlLabel.setBounds(120, 11, 20, 14);
-		layeredPane_2.add(playerLvlLabel);
-		
 		JLabel lblBackground = new JLabel("");
 		lblBackground.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\black.png"));
 		lblBackground.setBounds(0, 0, 150, 140);
@@ -179,25 +167,54 @@ public class GUI extends JFrame {
 		contentPane.add(layeredPane_4);
 		
 		JButton btnAttack = new JButton("Attack");
-		btnAttack.setBounds(392, 291, 71, 23);
+		btnAttack.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(inCombat)
+					playerAttack();
+			}
+		});
+		btnAttack.setMargin(new Insets(2, 2, 2, 2));
+		btnAttack.setBounds(360, 291, 53, 23);
 		layeredPane_4.add(btnAttack);
 		
 		JButton btnRun = new JButton("Run");
-		btnRun.setBounds(392, 319, 71, 23);
+		btnRun.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(inCombat){
+					enemyTurn();
+					playerCharacter.setXPos(lastXPos);
+					playerCharacter.setYPos(lastYPos);
+					updateDisplay();
+					inCombat = false;
+				}
+			}
+		});
+		btnRun.setMargin(new Insets(2, 2, 2, 2));
+		btnRun.setBounds(418, 319, 45, 23);
 		layeredPane_4.add(btnRun);
 		
 		JButton btnDown = new JButton("Down");
 		btnDown.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(!inCombat && movePlayer(3)){
-					playerCharacter.setYPos(playerCharacter.getYPos()-1);
+				if(!inCombat && movePlayer(1)){
 					updateDisplay();
-					if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
-						combatPhase();
+					checkRoom();
 				}
 			}
 		});
+		
+		JButton btnPotion = new JButton("Potion");
+		btnPotion.setMargin(new Insets(2, 2, 2, 2));
+		btnPotion.setBounds(360, 319, 53, 23);
+		layeredPane_4.add(btnPotion);
+		
+		JButton btnMagic = new JButton("Magic");
+		btnMagic.setMargin(new Insets(2, 2, 2, 2));
+		btnMagic.setBounds(418, 291, 45, 23);
+		layeredPane_4.add(btnMagic);
 		btnDown.setMargin(new Insets(2, 2, 2, 2));
 		btnDown.setBounds(181, 330, 37, 23);
 		layeredPane_4.add(btnDown);
@@ -206,11 +223,9 @@ public class GUI extends JFrame {
 		btnUp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if(!inCombat && movePlayer(1)){
-					playerCharacter.setYPos(playerCharacter.getYPos()+1);
+				if(!inCombat && movePlayer(3)){
 					updateDisplay();
-					if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
-						combatPhase();
+					checkRoom();
 				}
 			}
 		});
@@ -223,10 +238,8 @@ public class GUI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if(!inCombat && movePlayer(2)){
-					playerCharacter.setXPos(playerCharacter.getXPos()+1);
 					updateDisplay();
-					if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
-						combatPhase();
+					checkRoom();
 				}
 			}
 		});
@@ -239,10 +252,8 @@ public class GUI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(!inCombat && movePlayer(4)){
-					playerCharacter.setXPos(playerCharacter.getXPos()-1);
 					updateDisplay();
-					if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
-						combatPhase();
+					checkRoom();
 				}
 			}
 		});
@@ -261,62 +272,69 @@ public class GUI extends JFrame {
 	public void updateDisplay(){
 		//sets room picture
 		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident == null)
-			lblImage.setIcon(new ImageIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Rooms\\Finalroom.jpg").getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
+			lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Rooms/Finalroom.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
 		else{
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof Goblin){
-				lblImage.setIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Goblin.jpg")));
+				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Goblin.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
 				System.out.println("itsagoblin");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof CaveTroll){
-				lblImage.setIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/CaveTroll.jpg")));
-				System.out.println("itsagoblin");
+				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/CaveTroll.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
+				System.out.println("itsacavetroll");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof HobGoblin){
-				lblImage.setIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Hobgoblin.jpg")));
-				System.out.println("itsagoblin");
+				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Hobgoblin.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
+				System.out.println("itsahobgoblin");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof MountainTroll){
-				lblImage.setIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/MountainTroll.jpg")));
-				System.out.println("itsagoblin");
+				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/MountainTroll.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
+				System.out.println("itsamountroll");
 			}
 		}
 		//sets player status
 		playerNameLabel.setText(playerCharacter.getName());
 		playerAttackLabel.setText(String.valueOf(playerCharacter.getStrength()));
 		playerHealthLabel.setText(String.valueOf(playerCharacter.getHP()));
-		playerArmorLabel.setText(String.valueOf(playerCharacter.getStrength()));
+		playerScoreLabel.setText(String.valueOf(playerCharacter.getScore()));
 		playerLvlLabel.setText(String.valueOf(playerCharacter.getLvl()));
+		playerArmorLabel.setText(String.valueOf(playerCharacter.getArmor()));
 		//sets minimap
-		
+		minimappanel.repaint();
 	}
 	
 	public boolean movePlayer(int direction){
+		lastXPos = playerCharacter.getXPos();
+		lastYPos = playerCharacter.getYPos();
 		switch(direction){
-		case 1:
-			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1]!= null && playerCharacter.getYPos()+1 < 10){
+		case 1://down of minimap
+			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1]!= null && map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1].connectedToStart){
+				map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1].beenVisited = true;
 				playerCharacter.setYPos(playerCharacter.getYPos()+1);
-				System.out.println("movednorth");
+				System.out.println("movednorth " + (playerCharacter.getYPos()-1) + " to " + playerCharacter.getYPos());
 				return true;
 			}	
 			break;
-		case 2:
-			if(map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()]!= null && playerCharacter.getXPos()+1 < 10){
+		case 2://right on minimap
+			if(map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()]!= null  &&map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()].connectedToStart ){
+				map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()].beenVisited = true;
 				playerCharacter.setXPos(playerCharacter.getXPos()+1);
-				System.out.println("movedeast");
+				System.out.println("movedeast from " + (playerCharacter.getXPos()-1) + " to " + playerCharacter.getXPos());
 				return true;
 			}	
 			break;
-		case 3:
-			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1]!= null && playerCharacter.getYPos()-1 > 1){
+		case 3://up on minimap
+			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1]!= null && map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1].connectedToStart){
+				map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1].beenVisited = true;
 				playerCharacter.setYPos(playerCharacter.getYPos()-1);
-				System.out.println("movedsouth");
+				System.out.println("movedsouth " + (playerCharacter.getYPos()+1) + " to " + playerCharacter.getYPos());
 				return true;
 			}
 			break;
-		case 4:
-			if(map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()]!= null && playerCharacter.getXPos()-1 > 1){
+		case 4://left on minimap
+			if(map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()]!= null && map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()].connectedToStart){
+				map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()].beenVisited = true;
 				playerCharacter.setXPos(playerCharacter.getXPos()-1);
-				System.out.println("movedWest");
+				System.out.println("movedWest " + (playerCharacter.getXPos()+1) + " to " + playerCharacter.getXPos());
 				return true;
 			}	
 			break;
@@ -325,21 +343,75 @@ public class GUI extends JFrame {
 	}
 	
 	public void combatPhase(){
-		inCombat = true;
-		Monster enemy = map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident;
-		while(enemy.getHP() > 1 && playerCharacter.getHP() > 1){
-			
+		inCombat = true;		
+		enemy = map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident;
+		if(playerCharacter.getSpeed()+num.nextInt(10) < enemy.getSpeed()+num.nextInt(10))
+			enemyTurn();
+		
+	}
+	
+	void playerAttack(){
+		int damageValue = playerCharacter.getStrength() + num.nextInt(((Sword)playerCharacter.getFromInventory(0)).damageValue);
+		enemy.editHP(-1*damageValue);
+		if(enemy.getHP() < 1){
+			combatOver();
 		}
+		else{
+			JOptionPane.showConfirmDialog(null, "You gave " + damageValue + " damage!" ,"You attacked!",JOptionPane.OK_OPTION);
+			enemyTurn();
+		}
+	}
+	
+	void enemyTurn(){
+		int damageValue = enemy.getAttack() + num.nextInt(enemy.getAttackVariance()) - playerCharacter.getArmor();
+		playerCharacter.editHP(-1*damageValue);
 		if(playerCharacter.getHP() < 1)
 			gameOver();
-		if(enemy.getHP() < 1){
-			playerCharacter.addXp(enemy.expWorth);
-			playerCharacter.editScore(enemy.expWorth);
-			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot != null){
-				
-			}
-		}
+		else
+			JOptionPane.showConfirmDialog(null, "You took " + damageValue + " damage!" ,"You took damage!",JOptionPane.OK_OPTION);
+		updateDisplay();
+	}
+	
+	void combatOver(){
+		playerCharacter.addXp(enemy.expWorth);
+		playerCharacter.editScore(enemy.expWorth);
+		map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident = null;
+		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot != null)//checks for item drops
+			pickupLoot();
 		inCombat = false;
+		enemy = null;
+		updateDisplay();
+		checkRoom();
+	}
+	
+	void pickupLoot(){
+		Item drop = map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot;
+		JOptionPane.showConfirmDialog(null, "You picked up a " + drop.getItemName() +"!" ,"You got an item!",JOptionPane.OK_OPTION);
+		if(drop.getItemType() == 0){//checks to see if the item is a weapon
+			if(playerCharacter.getFromInventory(0).getItemID() < drop.getItemID())
+				playerCharacter.addToInventory(0, drop);
+			else
+				JOptionPane.showConfirmDialog(null, "You have a better Sword than that!\nDropping..","You got an item!",JOptionPane.OK_OPTION);
+		}
+		if(drop.getItemType() == 1){
+			
+		}
+		if(drop.getItemType() == 2){//checks to see if item is a armor
+			if(playerCharacter.getFromInventory(1).getItemID() < drop.getItemID())
+				playerCharacter.addToInventory(1, drop);
+			else
+				JOptionPane.showConfirmDialog(null, "You have better Armor than that!\nDropping..","You got an item!",JOptionPane.OK_OPTION);
+		}
+		map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot = null;
+	}
+	
+	void checkRoom(){
+		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
+			combatPhase();
+		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot != null)
+			pickupLoot();
+		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].hasStairs)
+			nextFloor();
 	}
 	
 	void setPlayerStart(){
@@ -355,12 +427,51 @@ public class GUI extends JFrame {
 	}
 	
 	void nextFloor(){
-		
-		
+		map = new World(5);	
+		map.genWorld();
+		setPlayerStart();
+		playerCharacter.editScore(10);
 		updateDisplay();
 	}
 	
 	void gameOver(){
-		
+		int response = JOptionPane.showConfirmDialog(null, "Game over!\nTotal Score: " + playerCharacter.getScore() + "\nWould you like to play again?","Game Over!",JOptionPane.YES_NO_OPTION);
+		if(response == JOptionPane.YES_OPTION){
+			playerCharacter = new Player(playerCharacter.getName());
+			map = new World(5);
+			map.genWorld();
+			setPlayerStart();
+			updateDisplay();
+			inCombat = false;
+		}
+		else
+			System.exit(0);
+	}
+	
+	public class mapPanel extends JPanel{
+		public mapPanel(){
+			
+		}
+		protected void paintComponent(Graphics g){
+			super.paintComponent(g);
+			int ycoord= 1, xcoord = 1;
+			for(int i = 1; i < map.worldMap.length;i++){
+				xcoord = 1;
+				for(int k = 1; k < map.worldMap[0].length;k++){
+					g.drawRect(ycoord, xcoord, 12, 12);
+					g.setColor(Color.black);
+					if(map.worldMap[i][k]!= null && map.worldMap[i][k].connectedToStart)
+						g.setColor(Color.gray);
+					if(map.worldMap[i][k]!= null && map.worldMap[i][k].hasStairs)
+						g.setColor(Color.white);
+					if(i == playerCharacter.getXPos() && k == playerCharacter.getYPos())
+						g.setColor(Color.green);
+					g.fillRect(ycoord, xcoord, 12, 12);
+					g.setColor(Color.black);
+					xcoord += 14;
+				}
+				ycoord += 14;
+			}
+		}
 	}
 }

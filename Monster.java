@@ -5,12 +5,22 @@ public abstract class Monster {
     
     public void editHP(int damage){
     	currentHP += damage;
+    	System.out.println(currentHP);
     }
     public void editArmor(int value){
     	armor += value;
     }
     public int getHP(){
     	return currentHP;
+    }
+    public int getSpeed(){
+    	return speed;
+    }
+    public int getAttack(){
+    	return attack;
+    }
+    public int getAttackVariance(){
+    	return attackVariance;
     }
 }
 

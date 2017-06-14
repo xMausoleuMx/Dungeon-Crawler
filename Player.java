@@ -67,7 +67,11 @@ public class Player {
     public int getLvl(){
     	return currentLevel;
     }
-    
+    public int getArmor(){
+    	if(inventory[1] != null)
+    		return ((Armor)inventory[1]).armorValue;
+    	return 0;
+    }
     
     //Add exp to the player when an enemy is killed or a floor is completed.
     public void addXp(int exp){
@@ -100,5 +104,16 @@ public class Player {
     }
     public void setXPos(int x){
     	xPos = x;
+    }
+    
+    public Item getFromInventory(int index){
+    	if(inventory[index] == null)
+    		return null;
+    	else
+    		return inventory[index]; 	
+    }
+    
+    public void addToInventory(int index, Item insert){
+    	inventory[index] = insert;
     }
 }

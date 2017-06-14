@@ -1,12 +1,9 @@
-import java.util.*;
-import java.text.*;
-import java.io.*;
 import javax.swing.*;
 public class client {
 	public static int levelcount = 1;
 	public static String name;
 	public static void main(String args[]){
-		name = JOptionPane.showInputDialog("WELCOME TO DUNGEON DESTROYER!\nPLEASE ENTER YOUR CHARACTERS NAME");
+		name = JOptionPane.showInputDialog("Welcome to Dungeon Crawler!\nEnter your character name:");
 		startGame(name);
 	}
 	
