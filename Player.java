@@ -1,7 +1,7 @@
 
 public class Player {
-	private int currentHP = 50;
-	private int MAX_HP = 50;
+	private int currentHP = 50,currentMana = 50;
+	private int MAX_HP = 50, MAX_MANA = 50;
 	private int score = 0;
 	public boolean hasLeveledFlag = false;
 	private int xPos, yPos;
@@ -80,6 +80,18 @@ public class Player {
     		levelUp();
     }
     
+    public void drinkPotion(Item potion){
+    	switch(potion.itemId){
+    	case 4: 
+    		this.editHP(((Potion)potion).getPotionValue());
+    		break;
+    	case 5:
+    		this.editMana(((Potion)potion).getPotionValue());
+    		break;
+    	}
+    	
+    }
+    
     public void levelUp(){
     	currentLevel++;
     	if(currentLevel%5==0){
@@ -90,6 +102,11 @@ public class Player {
     	speed++;
     }
     
+    public void editMana(int x){
+    	currentMana += x;
+    	if(currentMana > MAX_MANA)
+    		currentMana = MAX_MANA;
+    }
     public void editScore(int x){
     	score+=x;
     }
@@ -115,5 +132,15 @@ public class Player {
     
     public void addToInventory(int index, Item insert){
     	inventory[index] = insert;
+    }
+    
+    public boolean addToInventory(Item insert){
+    	for(int i = 0; i < inventory.length;i++){
+    		if(inventory[i] == null){
+    			inventory[i] = insert;
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }

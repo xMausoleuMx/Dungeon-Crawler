@@ -28,7 +28,7 @@ public class GUI extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) {//to be used for testing only
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -276,19 +276,15 @@ public class GUI extends JFrame {
 		else{
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof Goblin){
 				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Goblin.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
-				System.out.println("itsagoblin");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof CaveTroll){
 				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/CaveTroll.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
-				System.out.println("itsacavetroll");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof HobGoblin){
 				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/Hobgoblin.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
-				System.out.println("itsahobgoblin");
 			}
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident instanceof MountainTroll){
 				lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Monsters/MountainTroll.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
-				System.out.println("itsamountroll");
 			}
 		}
 		//sets player status
@@ -302,6 +298,18 @@ public class GUI extends JFrame {
 		minimappanel.repaint();
 	}
 	
+	void setPlayerStart(){
+		for(int i = 0; i < map.worldMap.length;i++){
+			for(int k = 0; k <map.worldMap[0].length;k++){
+				if(map.worldMap[i][k]!= null && map.worldMap[i][k].isStart){
+					playerCharacter.setXPos(i);
+					playerCharacter.setYPos(k);
+					return;
+				}
+			}	
+		}
+	}
+	
 	public boolean movePlayer(int direction){
 		lastXPos = playerCharacter.getXPos();
 		lastYPos = playerCharacter.getYPos();
@@ -310,7 +318,6 @@ public class GUI extends JFrame {
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1]!= null && map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1].connectedToStart){
 				map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()+1].beenVisited = true;
 				playerCharacter.setYPos(playerCharacter.getYPos()+1);
-				System.out.println("movednorth " + (playerCharacter.getYPos()-1) + " to " + playerCharacter.getYPos());
 				return true;
 			}	
 			break;
@@ -318,7 +325,6 @@ public class GUI extends JFrame {
 			if(map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()]!= null  &&map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()].connectedToStart ){
 				map.worldMap[playerCharacter.getXPos()+1][playerCharacter.getYPos()].beenVisited = true;
 				playerCharacter.setXPos(playerCharacter.getXPos()+1);
-				System.out.println("movedeast from " + (playerCharacter.getXPos()-1) + " to " + playerCharacter.getXPos());
 				return true;
 			}	
 			break;
@@ -326,7 +332,6 @@ public class GUI extends JFrame {
 			if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1]!= null && map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1].connectedToStart){
 				map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()-1].beenVisited = true;
 				playerCharacter.setYPos(playerCharacter.getYPos()-1);
-				System.out.println("movedsouth " + (playerCharacter.getYPos()+1) + " to " + playerCharacter.getYPos());
 				return true;
 			}
 			break;
@@ -334,12 +339,20 @@ public class GUI extends JFrame {
 			if(map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()]!= null && map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()].connectedToStart){
 				map.worldMap[playerCharacter.getXPos()-1][playerCharacter.getYPos()].beenVisited = true;
 				playerCharacter.setXPos(playerCharacter.getXPos()-1);
-				System.out.println("movedWest " + (playerCharacter.getXPos()+1) + " to " + playerCharacter.getXPos());
 				return true;
 			}	
 			break;
 		}
 		return false;
+	}
+	
+	void checkRoom(){
+		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
+			combatPhase();
+		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot != null)
+			pickupLoot();
+		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].hasStairs)
+			nextFloor();
 	}
 	
 	public void combatPhase(){
@@ -393,8 +406,9 @@ public class GUI extends JFrame {
 			else
 				JOptionPane.showConfirmDialog(null, "You have a better Sword than that!\nDropping..","You got an item!",JOptionPane.OK_OPTION);
 		}
-		if(drop.getItemType() == 1){
-			
+		if(drop.getItemType() == 1){//checks to see if item is a potion.
+			if(!playerCharacter.addToInventory(drop))
+				playerCharacter.drinkPotion(drop);//drinks potion if there are no inventory slots left
 		}
 		if(drop.getItemType() == 2){//checks to see if item is a armor
 			if(playerCharacter.getFromInventory(1).getItemID() < drop.getItemID())
@@ -403,27 +417,6 @@ public class GUI extends JFrame {
 				JOptionPane.showConfirmDialog(null, "You have better Armor than that!\nDropping..","You got an item!",JOptionPane.OK_OPTION);
 		}
 		map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot = null;
-	}
-	
-	void checkRoom(){
-		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident!=null)
-			combatPhase();
-		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].loot != null)
-			pickupLoot();
-		else if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].hasStairs)
-			nextFloor();
-	}
-	
-	void setPlayerStart(){
-		for(int i = 0; i < map.worldMap.length;i++){
-			for(int k = 0; k <map.worldMap[0].length;k++){
-				if(map.worldMap[i][k]!= null && map.worldMap[i][k].isStart){
-					playerCharacter.setXPos(i);
-					playerCharacter.setYPos(k);
-					return;
-				}
-			}	
-		}
 	}
 	
 	void nextFloor(){
@@ -449,8 +442,7 @@ public class GUI extends JFrame {
 	}
 	
 	public class mapPanel extends JPanel{
-		public mapPanel(){
-			
+		public mapPanel(){	
 		}
 		protected void paintComponent(Graphics g){
 			super.paintComponent(g);

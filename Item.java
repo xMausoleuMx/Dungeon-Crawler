@@ -60,6 +60,9 @@ class Potion extends Item{
 	public Potion(){
 		type = 1;
 	}
+	public int getPotionValue(){
+		return modifierValue;
+	}
 }
 
 class HealthPotion extends Potion{

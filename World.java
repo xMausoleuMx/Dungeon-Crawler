@@ -35,6 +35,7 @@ public class World {
 		//Makes sure a non starting room has stairs
 		int x = num.nextInt(size-1)+1;
 		roomHolder.get(x).hasStairs = true;
+		
 		int xCoord = num.nextInt(10)+1;
 		int yCoord = num.nextInt(10)+1;
 		worldMap[xCoord][yCoord] = start;
@@ -47,17 +48,6 @@ public class World {
 					worldMap[xCoord][yCoord] = roomHolder.get(i);
 				}
 			}while(!roomHolder.get(i).connectedToStart);
-		}
-		
-		//for testing purposes
-		for(int i = 0; i < 11;i++){
-			for(int k = 0; k < 11;k++){
-				if(worldMap[i][k].connectedToStart)
-					System.out.print("X");
-				else
-					System.out.print("O");
-			}
-			System.out.print("\n");
 		}
 	}
 	
