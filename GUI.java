@@ -24,7 +24,7 @@ public class GUI extends JFrame {
 	private mapPanel minimappanel;
 	private World map;
 	private boolean inCombat = false;
-	private JLabel lblImage, playerHealthLabel, playerAttackLabel, playerArmorLabel, playerScoreLabel, playerLvlLabel, playerNameLabel;
+	private JLabel lblImage, playerHealthLabel, playerAttackLabel, playerArmorLabel, playerScoreLabel, playerLvlLabel, playerNameLabel, playerManaLabel;
 	/**
 	 * Launch the application.
 	 */
@@ -108,7 +108,7 @@ public class GUI extends JFrame {
 		JLabel lblScore = new JLabel("Score: ");
 		layeredPane_2.setLayer(lblScore, 1);
 		lblScore.setForeground(Color.WHITE);
-		lblScore.setBounds(55, 115, 46, 14);
+		lblScore.setBounds(10, 25, 46, 14);
 		layeredPane_2.add(lblScore);
 		
 		playerLvlLabel = new JLabel("0");
@@ -138,13 +138,23 @@ public class GUI extends JFrame {
 		
 		playerScoreLabel = new JLabel("0");
 		playerScoreLabel.setForeground(Color.WHITE);
-		playerScoreLabel.setBounds(94, 115, 46, 14);
+		playerScoreLabel.setBounds(10, 40, 46, 14);
 		layeredPane_2.add(playerScoreLabel);
+		
+		JLabel lblMana = new JLabel("Mana: ");
+		lblMana.setForeground(Color.WHITE);
+		lblMana.setBounds(55, 115, 46, 14);
+		layeredPane_2.add(lblMana);
 		
 		playerNameLabel = new JLabel("");
 		playerNameLabel.setForeground(Color.WHITE);
 		playerNameLabel.setBounds(10, 11, 79, 14);
 		layeredPane_2.add(playerNameLabel);
+		
+	    playerManaLabel = new JLabel("0");
+		playerManaLabel.setForeground(Color.WHITE);
+		playerManaLabel.setBounds(94, 115, 46, 14);
+		layeredPane_2.add(playerManaLabel);
 		
 		JLabel lblBackground = new JLabel("");
 		lblBackground.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\black.png"));
@@ -207,11 +217,24 @@ public class GUI extends JFrame {
 		});
 		
 		JButton btnPotion = new JButton("Potion");
+		btnPotion.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+			}
+		});
 		btnPotion.setMargin(new Insets(2, 2, 2, 2));
 		btnPotion.setBounds(360, 319, 53, 23);
 		layeredPane_4.add(btnPotion);
 		
 		JButton btnMagic = new JButton("Magic");
+		btnMagic.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(inCombat)
+					magicAttack();
+			}
+		});
 		btnMagic.setMargin(new Insets(2, 2, 2, 2));
 		btnMagic.setBounds(418, 291, 45, 23);
 		layeredPane_4.add(btnMagic);
@@ -294,6 +317,7 @@ public class GUI extends JFrame {
 		playerScoreLabel.setText(String.valueOf(playerCharacter.getScore()));
 		playerLvlLabel.setText(String.valueOf(playerCharacter.getLvl()));
 		playerArmorLabel.setText(String.valueOf(playerCharacter.getArmor()));
+		playerManaLabel.setText(String.valueOf(playerCharacter.getMana()));
 		//sets minimap
 		minimappanel.repaint();
 	}
@@ -364,13 +388,30 @@ public class GUI extends JFrame {
 	}
 	
 	void playerAttack(){
-		int damageValue = playerCharacter.getStrength() + num.nextInt(((Sword)playerCharacter.getFromInventory(0)).damageValue);
+		int damageValue = playerCharacter.getStrength() + num.nextInt(((Sword)playerCharacter.getFromInventory(0)).damageValue) - enemy.getArmor();
 		enemy.editHP(-1*damageValue);
 		if(enemy.getHP() < 1){
 			combatOver();
 		}
 		else{
 			JOptionPane.showConfirmDialog(null, "You gave " + damageValue + " damage!" ,"You attacked!",JOptionPane.OK_OPTION);
+			enemyTurn();
+		}
+	}
+	
+	void magicAttack(){
+		if(playerCharacter.getMana() < 5){
+			JOptionPane.showConfirmDialog(null, "You don't have enough mana to cast a spell!" ,"Spell Failed!",JOptionPane.OK_OPTION);
+			return;
+		}
+		int damageValue = num.nextInt(15);
+		enemy.editHP(-1*damageValue);
+		playerCharacter.editMana(-5);
+		if(enemy.getHP() < 1){
+			combatOver();
+		}
+		else{
+			JOptionPane.showConfirmDialog(null, "You gave " + damageValue + " of magic damage!" ,"You cast a spell!",JOptionPane.OK_OPTION);
 			enemyTurn();
 		}
 	}

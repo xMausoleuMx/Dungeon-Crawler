@@ -22,6 +22,9 @@ public abstract class Monster {
     public int getAttackVariance(){
     	return attackVariance;
     }
+    public int getArmor(){
+    	return armor;
+    }
 }
 
 //outlines the base stats for the goblin creature type. Basic low tier monster with balacned attack and defense.

@@ -52,6 +52,9 @@ public class Player {
     public int getStrength(){
     	return strength;
     }
+    public int getMana(){
+    	return currentMana;
+    }
     public int getSpeed(){
     	return speed;
     }
