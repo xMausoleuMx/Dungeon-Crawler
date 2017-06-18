@@ -86,10 +86,10 @@ public class Player {
     public void drinkPotion(Item potion){
     	switch(potion.itemId){
     	case 4: 
-    		this.editHP(((Potion)potion).getPotionValue());
+    		editHP(((Potion)potion).getPotionValue());
     		break;
     	case 5:
-    		this.editMana(((Potion)potion).getPotionValue());
+    		editMana(((Potion)potion).getPotionValue());
     		break;
     	}
     	
@@ -127,17 +127,14 @@ public class Player {
     }
     
     public Item getFromInventory(int index){
-    	if(inventory[index] == null)
-    		return null;
-    	else
-    		return inventory[index]; 	
+    	return inventory[index];
     }
     
-    public void addToInventory(int index, Item insert){
+    public void addToInventory(int index, Item insert){//used for replacing items in the armor or sword slot
     	inventory[index] = insert;
     }
     
-    public boolean addToInventory(Item insert){
+    public boolean addToInventory(Item insert){//used for potions
     	for(int i = 0; i < inventory.length;i++){
     		if(inventory[i] == null){
     			inventory[i] = insert;

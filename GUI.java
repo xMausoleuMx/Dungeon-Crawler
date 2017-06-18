@@ -71,7 +71,7 @@ public class GUI extends JFrame {
 		contentPane.add(layeredPane_1);
 		
 		JLabel lblInv = new JLabel("");
-		lblInv.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\Inv.png"));
+		lblInv.setIcon(new ImageIcon(GUI.class.getResource("/assets/Character/Inv.png")));
 		lblInv.setBounds(0, 0, 314, 38);
 		layeredPane_1.add(lblInv);
 		
@@ -83,7 +83,7 @@ public class GUI extends JFrame {
 		
 		JLabel lblPlayersprite = new JLabel("");
 		layeredPane_2.setLayer(lblPlayersprite, 1);
-		lblPlayersprite.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\Nakedsprite.png"));
+		lblPlayersprite.setIcon(new ImageIcon(GUI.class.getResource("/assets/Character/Nakedsprite.png")));
 		lblPlayersprite.setBounds(10, 59, 35, 70);
 		layeredPane_2.add(lblPlayersprite);
 		
@@ -157,7 +157,7 @@ public class GUI extends JFrame {
 		layeredPane_2.add(playerManaLabel);
 		
 		JLabel lblBackground = new JLabel("");
-		lblBackground.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\black.png"));
+		lblBackground.setIcon(new ImageIcon(GUI.class.getResource("/assets/Character/black.png")));
 		lblBackground.setBounds(0, 0, 150, 140);
 		layeredPane_2.add(lblBackground);
 		
@@ -167,7 +167,7 @@ public class GUI extends JFrame {
 		contentPane.add(layeredPane_3);
 		
 		JLabel lblNewLabel_1 = new JLabel("");
-		lblNewLabel_1.setIcon(new ImageIcon("D:\\Coding\\Dungeon Crawler\\assets\\Character\\Inv.png"));
+		lblNewLabel_1.setIcon(new ImageIcon(GUI.class.getResource("/assets/Character/Inv.png")));
 		lblNewLabel_1.setBounds(0, 0, 314, 40);
 		layeredPane_3.add(lblNewLabel_1);
 		
@@ -292,7 +292,7 @@ public class GUI extends JFrame {
 		updateDisplay();
 	}
 	
-	public void updateDisplay(){
+	void updateDisplay(){
 		//sets room picture
 		if(map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident == null)
 			lblImage.setIcon(new ImageIcon(new ImageIcon(GUI.class.getResource("/assets/Rooms/Finalroom.jpg")).getImage().getScaledInstance(613, 353, Image.SCALE_DEFAULT)));
@@ -334,7 +334,7 @@ public class GUI extends JFrame {
 		}
 	}
 	
-	public boolean movePlayer(int direction){
+	boolean movePlayer(int direction){
 		lastXPos = playerCharacter.getXPos();
 		lastYPos = playerCharacter.getYPos();
 		switch(direction){
@@ -379,7 +379,7 @@ public class GUI extends JFrame {
 			nextFloor();
 	}
 	
-	public void combatPhase(){
+	void combatPhase(){
 		inCombat = true;		
 		enemy = map.worldMap[playerCharacter.getXPos()][playerCharacter.getYPos()].resident;
 		if(playerCharacter.getSpeed()+num.nextInt(10) < enemy.getSpeed()+num.nextInt(10))
