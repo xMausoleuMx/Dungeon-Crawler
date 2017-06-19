@@ -220,7 +220,29 @@ public class GUI extends JFrame {
 		btnPotion.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
+				Object[] options = {"Health",
+                "Mana"};
+				int n = JOptionPane.showOptionDialog(null,
+				"Which type of potion would you like to drink?",
+				"Which Potion",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,     
+				options,  
+				options[0]);
+				System.out.println(n);
+				if(inCombat){
+					if(playerCharacter.drinkPotion(n+4)){
+						enemyTurn();
+					}
+					else
+						JOptionPane.showConfirmDialog(null, "You don't have any of that potion!" ,"Out of Potion",JOptionPane.OK_OPTION);
+				}
+				else{
+					if(!playerCharacter.drinkPotion(n+4))
+						JOptionPane.showConfirmDialog(null, "You don't have any of that potion!" ,"Out of Potion",JOptionPane.OK_OPTION);
+				}
+				updateDisplay();
 			}
 		});
 		btnPotion.setMargin(new Insets(2, 2, 2, 2));

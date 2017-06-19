@@ -95,6 +95,17 @@ public class Player {
     	
     }
     
+    public boolean drinkPotion(int id){
+    	for(int i= 0; i < inventory.length;i++){
+			if(inventory[i] != null && inventory[i].itemId == id){
+				drinkPotion(inventory[i]);
+				inventory[i] = null;
+				return true;
+			}
+		}
+    	return false;    	
+    }
+    
     public void levelUp(){
     	currentLevel++;
     	if(currentLevel%5==0){
