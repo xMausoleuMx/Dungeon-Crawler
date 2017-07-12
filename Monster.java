@@ -5,7 +5,6 @@ public abstract class Monster {
     
     public void editHP(int damage){
     	currentHP += damage;
-    	System.out.println(currentHP);
     }
     public void editArmor(int value){
     	armor += value;

@@ -37,6 +37,10 @@ public class Player {
     		strength = 3;
     		inventory[0] = new SteelSword();
     		break;
+    	case 4://insane difficulty
+    		speed = 5;
+    		strength = 3;
+    		break;
     	}
     }
     
