@@ -9,8 +9,7 @@ public class World {
 	}
 	
 	public void genWorld(){
-		size = num.nextInt(difficulty)+15;
-		
+		size = num.nextInt(difficulty+1)+15;
 		Room holder = new Room();
 		for(int i =0; i < 11; i++)
 			for(int k = 0; k <11;k++)
@@ -92,6 +91,10 @@ public class World {
 			return roomLoot = new SteelSword();			
 		else
 			return roomLoot = new AdamantiumSword();
+	}
+	
+	public int getDifficulty(){
+		return difficulty;
 	}
 }
 

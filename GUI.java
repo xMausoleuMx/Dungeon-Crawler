@@ -32,7 +32,7 @@ public class GUI extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Player holder = new Player("test");
+					Player holder = new Player("test", 2);
 					World wHolder = new World(5);
 					wHolder.genWorld();
 					GUI frame = new GUI(wHolder,holder);
@@ -493,8 +493,8 @@ public class GUI extends JFrame {
 	void gameOver(){
 		int response = JOptionPane.showConfirmDialog(null, "Game over!\nTotal Score: " + playerCharacter.getScore() + "\nWould you like to play again?","Game Over!",JOptionPane.YES_NO_OPTION);
 		if(response == JOptionPane.YES_OPTION){
-			playerCharacter = new Player(playerCharacter.getName());
-			map = new World(5);
+			playerCharacter = new Player(playerCharacter.getName(), map.getDifficulty());
+			map = new World(map.getDifficulty());
 			map.genWorld();
 			setPlayerStart();
 			updateDisplay();

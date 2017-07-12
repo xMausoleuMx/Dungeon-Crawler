@@ -15,12 +15,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.Dimension;
 
 public class GameInitializer extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField playerName;
 	private JComboBox difficultySelect;
+	private boolean playerSelected = false;
 
 	/**
 	 * Launch the application.
@@ -42,8 +44,9 @@ public class GameInitializer extends JFrame {
 	 * Create the frame.
 	 */
 	public GameInitializer() {
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 260, 150);
+		setBounds(100, 100, 252, 150);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -64,8 +67,10 @@ public class GameInitializer extends JFrame {
 			public void mouseReleased(MouseEvent arg0) {
 				if(getName() ==null)
 					JOptionPane.showConfirmDialog(null, "You need to enter a name!" ,"Error",JOptionPane.OK_OPTION);
-				else
-					System.out.println(getDifficulty());
+				else{
+					playerSelected = true;
+					setVisible(false);
+				}
 			}
 		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
@@ -107,5 +112,8 @@ public class GameInitializer extends JFrame {
 	
 	public int getDifficulty(){
 		return difficultySelect.getSelectedIndex();
+	}
+	public boolean selectionDone(){
+		return playerSelected;
 	}
 }

@@ -9,11 +9,11 @@ public class Player {
 	public int enemiesKilled =0;
     private String name;
     private Item inventory [];
-    public Player(String n){
+    public Player(String n, int difficulty){
         name = n;
         inventory = new Item[10];
         
-        buildCharacter(2);
+        buildCharacter(difficulty);
     }
     public void buildCharacter(int difficulty){
     	inventory[0] = new IronSword();
