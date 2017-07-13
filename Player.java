@@ -19,25 +19,25 @@ public class Player {
     	inventory[0] = new IronSword();
     	inventory[2] = new HealthPotion();
     	switch(difficulty){
-    	case 1://easy difficulty
+    	case 0://easy difficulty
     		strength = 5;
     		speed = 10;
     		inventory[1] = new IronArmor();
     		inventory[3] = new HealthPotion();
     		inventory[4] = new ManaPotion();
     		break;
-    	case 2://medium difficulty
+    	case 1://medium difficulty
     		strength = 5;
     		speed = 5;
     		inventory[1] = new IronArmor();
     		inventory[4] = new ManaPotion();
     		break;
-    	case 3://hard difficulty
+    	case 2://hard difficulty
     		speed = 5;
     		strength = 3;
     		inventory[0] = new SteelSword();
     		break;
-    	case 4://insane difficulty
+    	case 3://insane difficulty
     		speed = 5;
     		strength = 3;
     		break;

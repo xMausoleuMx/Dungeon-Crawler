@@ -179,7 +179,7 @@ public class GUI extends JFrame {
 		JButton btnAttack = new JButton("Attack");
 		btnAttack.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if(inCombat)
 					playerAttack();
 			}
@@ -191,7 +191,7 @@ public class GUI extends JFrame {
 		JButton btnRun = new JButton("Run");
 		btnRun.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if(inCombat){
 					enemyTurn();
 					playerCharacter.setXPos(lastXPos);
@@ -208,7 +208,7 @@ public class GUI extends JFrame {
 		JButton btnDown = new JButton("Down");
 		btnDown.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if(!inCombat && movePlayer(1)){
 					updateDisplay();
 					checkRoom();
@@ -219,7 +219,7 @@ public class GUI extends JFrame {
 		JButton btnPotion = new JButton("Potion");
 		btnPotion.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0) {
 				Object[] options = {"Health",
                 "Mana"};
 				int n = JOptionPane.showOptionDialog(null,
@@ -252,7 +252,7 @@ public class GUI extends JFrame {
 		JButton btnMagic = new JButton("Magic");
 		btnMagic.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if(inCombat)
 					magicAttack();
 			}
@@ -267,7 +267,7 @@ public class GUI extends JFrame {
 		JButton btnUp = new JButton("Up");
 		btnUp.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0) {
 				if(!inCombat && movePlayer(3)){
 					updateDisplay();
 					checkRoom();
@@ -281,7 +281,7 @@ public class GUI extends JFrame {
 		JButton btnRight = new JButton("Right");
 		btnRight.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent arg0) {
 				if(!inCombat && movePlayer(2)){
 					updateDisplay();
 					checkRoom();
@@ -295,7 +295,7 @@ public class GUI extends JFrame {
 		JButton btnLeft = new JButton("Left");
 		btnLeft.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if(!inCombat && movePlayer(4)){
 					updateDisplay();
 					checkRoom();
@@ -411,12 +411,16 @@ public class GUI extends JFrame {
 	
 	void playerAttack(){
 		int damageValue = playerCharacter.getStrength() + num.nextInt(((Sword)playerCharacter.getFromInventory(0)).damageValue) - enemy.getArmor();
-		enemy.editHP(-1*damageValue);
+		if(damageValue>0)
+			enemy.editHP(-1*damageValue);
 		if(enemy.getHP() < 1){
 			combatOver();
 		}
 		else{
-			JOptionPane.showConfirmDialog(null, "You gave " + damageValue + " damage!" ,"You attacked!",JOptionPane.OK_OPTION);
+			if(damageValue>0)
+				JOptionPane.showConfirmDialog(null, "You gave " + damageValue + " damage!" ,"You attacked!",JOptionPane.OK_OPTION);
+			else
+				JOptionPane.showConfirmDialog(null, "You did no damage!" ,"You attacked!",JOptionPane.OK_OPTION);
 			enemyTurn();
 		}
 	}
@@ -440,11 +444,16 @@ public class GUI extends JFrame {
 	
 	void enemyTurn(){
 		int damageValue = enemy.getAttack() + num.nextInt(enemy.getAttackVariance()) - playerCharacter.getArmor();
-		playerCharacter.editHP(-1*damageValue);
+		if(damageValue>0)
+			playerCharacter.editHP(-1*damageValue);
 		if(playerCharacter.getHP() < 1)
 			gameOver();
-		else
-			JOptionPane.showConfirmDialog(null, "You took " + damageValue + " damage!" ,"You took damage!",JOptionPane.OK_OPTION);
+		else{
+			if(damageValue>0)
+				JOptionPane.showConfirmDialog(null, "You took " + damageValue + " damage!" ,"You took damage!",JOptionPane.OK_OPTION);
+			else
+				JOptionPane.showConfirmDialog(null, "You dodged all the damage!" ,"You took damage!",JOptionPane.OK_OPTION);
+		}
 		updateDisplay();
 	}
 	
